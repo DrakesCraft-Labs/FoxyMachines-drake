@@ -1,7 +1,7 @@
 package me.gallowsdove.foxymachines.types;
 
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
+import dev.drake.dough.items.CustomItemStack;
 import me.gallowsdove.foxymachines.FoxyMachines;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

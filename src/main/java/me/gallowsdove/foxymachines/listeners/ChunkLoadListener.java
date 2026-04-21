@@ -1,6 +1,6 @@
 package me.gallowsdove.foxymachines.listeners;
 
-import io.github.thebusybiscuit.slimefun4.libraries.dough.blocks.ChunkPosition;
+import dev.drake.dough.blocks.ChunkPosition;
 import me.gallowsdove.foxymachines.abstracts.CustomMob;
 import me.gallowsdove.foxymachines.implementation.materials.GhostBlock;
 import org.bukkit.Chunk;

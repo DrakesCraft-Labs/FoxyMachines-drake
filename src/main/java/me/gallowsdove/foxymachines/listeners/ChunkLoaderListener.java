@@ -1,7 +1,7 @@
 package me.gallowsdove.foxymachines.listeners;
 
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
+import dev.drake.dough.config.Config;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import me.gallowsdove.foxymachines.FoxyMachines;
 import me.gallowsdove.foxymachines.Items;
