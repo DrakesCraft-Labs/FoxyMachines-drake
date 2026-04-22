@@ -8,7 +8,7 @@ website: https://github.com/GallowsDove/FoxyMachines
 depend: [Slimefun]
 softdepend: [AuraSkills]
 version: ${project.version}
-api-version: 1.16
+api-version: "1.21"
 
 commands:
   foxymachines:
