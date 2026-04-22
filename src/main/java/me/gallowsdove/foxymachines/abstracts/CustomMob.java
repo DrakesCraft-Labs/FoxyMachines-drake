@@ -4,7 +4,6 @@ import io.github.mooy1.infinitylib.common.Events;
 import lombok.Getter;
 import me.gallowsdove.foxymachines.FoxyMachines;
 
-import io.github.thebusybiscuit.slimefun4.libraries.commons.lang.Validate;
 import dev.drake.dough.common.ChatColors;
 import dev.drake.dough.data.persistent.PersistentDataAPI;
 
@@ -65,12 +64,17 @@ public abstract class CustomMob {
 
     @ParametersAreNonnullByDefault
     protected CustomMob(String id, String name, EntityType type, int health) {
-        Validate.notNull(this.id = id);
-        Validate.notNull(this.name = ChatColors.color(name));
-        Validate.notNull(this.type = type);
-        Validate.isTrue(type.isAlive(), "Entity type " + type + " is not alive!");
-        Validate.isTrue((this.health = health) > 0);
-        Validate.notNull(getSpawnOffset());
+        this.id = Objects.requireNonNull(id, "id");
+        this.name = Objects.requireNonNull(ChatColors.color(name), "name");
+        this.type = Objects.requireNonNull(type, "type");
+        if (!type.isAlive()) {
+            throw new IllegalArgumentException("Entity type " + type + " is not alive!");
+        }
+        if (health <= 0) {
+            throw new IllegalArgumentException("Health must be greater than 0");
+        }
+        this.health = health;
+        Objects.requireNonNull(getSpawnOffset(), "spawn offset");
 
         MOBS.put(id, this);
     }

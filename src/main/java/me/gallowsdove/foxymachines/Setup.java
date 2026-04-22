@@ -7,7 +7,6 @@ import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.github.thebusybiscuit.slimefun4.core.attributes.Radioactivity;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.armor.SlimefunArmorPiece;
-import io.github.thebusybiscuit.slimefun4.libraries.commons.lang.StringUtils;
 import dev.drake.dough.items.CustomItemStack;
 import me.gallowsdove.foxymachines.implementation.consumables.CustomMobSpawnEgg;
 import me.gallowsdove.foxymachines.implementation.consumables.SimpleConsumable;
@@ -55,6 +54,28 @@ final class ItemSetup {
     private boolean initialised;
 
     private ItemSetup() {}
+
+    private static String formatMaterialName(Material material) {
+        String[] words = material.name().toLowerCase().split("_");
+        StringBuilder builder = new StringBuilder();
+
+        for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+
+            if (builder.length() > 0) {
+                builder.append(' ');
+            }
+
+            builder.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) {
+                builder.append(word.substring(1));
+            }
+        }
+
+        return builder.toString();
+    }
 
     public void init() {
         if (initialised) return;
@@ -395,7 +416,7 @@ final class ItemSetup {
                     SlimefunItemStack stack = new SlimefunItemStack(
                             "GHOST_BLOCK_" + material.name().toUpperCase(),
                             material,
-                            "&fGhost Block: &6" + StringUtils.capitalize(material.name().replace("_", " ").toLowerCase()),
+                            "&fGhost Block: &6" + formatMaterialName(material),
                             "",
                             "&7An intangible block.");
 
