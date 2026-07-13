@@ -168,10 +168,10 @@ public class HeadlessHorseman extends CustomBoss {
                     return;
                 }
 
-                EntityDamageEvent event = new EntityDamageEvent(player, DamageCause.CUSTOM, 12);
-                Bukkit.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled()) {
-                    player.damage(12.4);
+                // Attribute the strike to the boss so plugins receive the normal cancellable damage event.
+                double healthBefore = player.getHealth();
+                player.damage(12.4, headlessHorseman);
+                if (player.getHealth() < healthBefore) {
                     Utils.dealDamageBypassingArmor(player, 1.72);
                 }
             });

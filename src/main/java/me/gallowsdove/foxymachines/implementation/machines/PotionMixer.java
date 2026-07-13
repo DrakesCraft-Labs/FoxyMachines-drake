@@ -31,7 +31,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -217,10 +216,10 @@ public class PotionMixer extends SlimefunItem implements EnergyNetComponent {
     }
 
     @Nonnull
-    protected PotionEffect[] getCustomEffectsFromBaseData(PotionData potionData, boolean lingering) {
-        PotionType type = potionData.getType();
-        boolean extended = potionData.isExtended();
-        boolean upgraded = potionData.isUpgraded();
+    protected PotionEffect[] getCustomEffectsFromBaseType(PotionType potionType, boolean lingering) {
+        boolean extended = potionType.name().startsWith("LONG_");
+        boolean upgraded = potionType.name().startsWith("STRONG_");
+        PotionType type = getBasePotionType(potionType);
         int d = 1;
         if (lingering){
             d = 4;
@@ -336,6 +335,17 @@ public class PotionMixer extends SlimefunItem implements EnergyNetComponent {
         return new PotionEffect[] {};
     }
 
+    private PotionType getBasePotionType(PotionType potionType) {
+        String name = potionType.name();
+        if (name.startsWith("LONG_")) {
+            return PotionType.valueOf(name.substring("LONG_".length()));
+        }
+        if (name.startsWith("STRONG_")) {
+            return PotionType.valueOf(name.substring("STRONG_".length()));
+        }
+        return potionType;
+    }
+
     @Nullable
     protected MachineRecipe findNextRecipe(@Nonnull BlockMenu menu) {
         int[] slots = getInputSlots();
@@ -375,11 +385,11 @@ public class PotionMixer extends SlimefunItem implements EnergyNetComponent {
                     potionMeta.addCustomEffect(potion2Effects.get(i), true);
                 }
 
-                for (PotionEffect effect : getCustomEffectsFromBaseData(potionMeta.getBasePotionData(), lingering)) {
+                for (PotionEffect effect : getCustomEffectsFromBaseType(potionMeta.getBasePotionType(), lingering)) {
                     potionMeta.addCustomEffect(effect, false);
                 }
 
-                for (PotionEffect effect : getCustomEffectsFromBaseData(potion2Meta.getBasePotionData(), lingering)) {
+                for (PotionEffect effect : getCustomEffectsFromBaseType(potion2Meta.getBasePotionType(), lingering)) {
                     for (PotionEffect effect2 : potionMeta.getCustomEffects()) {
                         if (effect.getType() == effect2.getType()) {
                             if (effect.getAmplifier() > effect2.getAmplifier()) {
@@ -394,7 +404,7 @@ public class PotionMixer extends SlimefunItem implements EnergyNetComponent {
                 List<String> lore = new ArrayList<>() {{
                     add("Not usable in Brewing Stand");
                 }};
-                potionMeta.setBasePotionData(new PotionData(PotionType.WATER, false, false));
+                potionMeta.setBasePotionType(PotionType.WATER);
                 switch (potion1.getType()) {
                     case POTION -> potionMeta.setDisplayName(ChatColor.AQUA + "Combined Potion");
                     case LINGERING_POTION -> {

@@ -1,12 +1,39 @@
-# FoxyMachines
-FoxyMachines adds various machines and tools to [Slimefun](https://github.com/Slimefun/Slimefun4).
+# FoxyMachines Drake
 
-### Requires at least Java 16!
+FoxyMachines Drake is the maintained DrakesCraft distribution of the FoxyMachines Slimefun addon. It keeps the original item IDs, recipes and stored data so established worlds and player inventories remain compatible while the runtime is updated for the current platform.
 
-### [Download](https://blob.build/project/FoxyMachines)
-[![Build Status](https://img.shields.io/badge/build-latest-brightgreen.svg)](https://blob.build/project/FoxyMachines)
+**Runtime:** Paper 1.21.1 compatible server, Java 21, Slimefun Drake 11 and InfinityLib Drake.
 
-#### Unwanted items can be disabled in items.yml
+## Operational guarantees
+
+- Plugin identity remains `FoxyMachines`; existing Slimefun items and PDC data continue to resolve.
+- Chunk-loader quota releases made while the owner is offline are persisted and applied on their next join.
+- Forcefield domes no longer retain Bukkit `Block` instances, do not modify world state from async tasks, and only remove barriers created by the dome itself.
+- Wands reject protected internal blocks and validate their selected volume before changing terrain.
+- The addon does not self-update. Releases are built, verified and staged through DrakesCraft operations.
+
+## Build
+
+```bash
+mvn -B -ntp clean verify
+```
+
+The distributable artifact is `target/FoxyMachines-drake.jar`.
+
+## Deployment
+
+1. Back up `/plugins/FoxyMachines-drake.jar` and `/plugins/FoxyMachines/`.
+2. Upload the verified artifact with the same plugin filename.
+3. Restart only during a planned maintenance window.
+4. Confirm that Slimefun registers FoxyMachines without migration errors and validate an existing machine before announcing the release.
+
+The previous JAR is the rollback artifact. Do not run two FoxyMachines JARs at once.
+
+## Configuration
+
+`plugins/FoxyMachines/config.yml` retains the established options. New installations default `auto-update` to `false`; no remote update service is used by this distribution.
+
+Individual items can still be disabled through Slimefun's `items.yml` configuration when appropriate.
 
 ## Bosses
 * Pixie Queen
@@ -53,9 +80,6 @@ FoxyMachines adds various machines and tools to [Slimefun](https://github.com/Sl
 * Sacrificial Altar
 * Ghost Blocks
 
-<!-- DRAKES-STATUS:BEGIN -->
-> Estado de sincronizacion: **2026-04-24**.
-> Baseline tecnico vigente: **Paper 1.21.1 + Java 21**.
-> CI principal en `main`: **Gates 1-5 en verde**.
-> Nota: el monorepo completo sigue en migracion incremental por lotes.
-<!-- DRAKES-STATUS:END -->
+## Provenance
+
+This repository was split from the DrakesCraft community-addons monorepo while preserving its history. Original FoxyMachines authorship remains credited in source and project metadata; DrakesCraft Labs maintains this distribution and its deployment process.

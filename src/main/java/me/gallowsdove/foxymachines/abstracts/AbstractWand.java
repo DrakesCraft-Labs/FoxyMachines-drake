@@ -25,6 +25,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,20 @@ public abstract class AbstractWand extends SlimefunItem implements NotPlaceable,
     protected static final Set<Material> WHITELIST = new HashSet<>();
 
     protected static final Set<Material> BLACKLIST = new HashSet<>();
+
+    private static final Set<Material> ALWAYS_BLOCKED = EnumSet.of(
+        Material.BARRIER,
+        Material.BEDROCK,
+        Material.COMMAND_BLOCK,
+        Material.CHAIN_COMMAND_BLOCK,
+        Material.REPEATING_COMMAND_BLOCK,
+        Material.STRUCTURE_BLOCK,
+        Material.STRUCTURE_VOID,
+        Material.JIGSAW,
+        Material.SPAWNER,
+        Material.END_PORTAL,
+        Material.END_GATEWAY
+    );
 
     public static void init() {
         if (!WHITELIST.isEmpty() || !BLACKLIST.isEmpty()) {
@@ -84,17 +99,23 @@ public abstract class AbstractWand extends SlimefunItem implements NotPlaceable,
             ItemStack itemInInventory = e.getItem();
             if (itemInInventory == null) return;
             ItemMeta meta = itemInInventory.getItemMeta();
+            if (meta == null) return;
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
             if (player.isSneaking() && !isRemoving() && e.getClickedBlock().isPresent()) {
                 Material material = e.getClickedBlock().get().getType();
                 String humanizedName = ChatUtils.humanize(material.toString());
-                if ((material.isBlock() && material.isSolid() && material.isOccluding() && !BLACKLIST.contains(material)) ||
-                        WHITELIST.contains(material)) {
+                if (((material.isBlock() && material.isSolid() && material.isOccluding()) ||
+                        WHITELIST.contains(material)) &&
+                        !ALWAYS_BLOCKED.contains(material) && !BLACKLIST.contains(material)) {
                     player.sendMessage(ChatColor.LIGHT_PURPLE + "Material set to: " + humanizedName);
                     container.set(AbstractWand.MATERIAL_KEY, PersistentDataType.STRING, material.toString());
-                    List<String> lore = this.getItem().getItemMeta().getLore();
-                    lore.set(lore.size() - 2, ChatColor.GRAY + "Material: " + ChatColor.YELLOW + humanizedName);
+                    List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
+                    if (lore.size() >= 2) {
+                        lore.set(lore.size() - 2, ChatColor.GRAY + "Material: " + ChatColor.YELLOW + humanizedName);
+                    } else {
+                        lore.add(ChatColor.GRAY + "Material: " + ChatColor.YELLOW + humanizedName);
+                    }
                     meta.setLore(lore);
                     itemInInventory.setItemMeta(meta);
                     setItemCharge(itemInInventory, getItemCharge(itemInInventory)); // To update it in lore
@@ -118,6 +139,12 @@ public abstract class AbstractWand extends SlimefunItem implements NotPlaceable,
                     return;
                 }
                 Material material = Material.getMaterial(container.get(MATERIAL_KEY, PersistentDataType.STRING));
+                if (material == null) {
+                    player.sendMessage(ChatColor.RED + "The selected material is no longer valid. Select it again with Shift + Right Click.");
+                    container.remove(MATERIAL_KEY);
+                    itemInInventory.setItemMeta(meta);
+                    return;
+                }
 
                 ItemStack blocks = new ItemStack(material, locs.size());
 
@@ -173,7 +200,14 @@ public abstract class AbstractWand extends SlimefunItem implements NotPlaceable,
             loc2.setZ(tmp);
         }
 
-        if ((loc1.getX() - loc2.getX()) * (loc1.getY() - loc2.getY()) * (loc1.getZ() - loc2.getZ()) > getMaxBlocks()) {
+        long width = (long) loc1.getX() - loc2.getX() + 1;
+        long height = (long) loc1.getY() - loc2.getY() + 1;
+        long depth = (long) loc1.getZ() - loc2.getZ() + 1;
+        long selectedBlocks = width * height * depth;
+        int maxBlocks = Math.max(1, getMaxBlocks());
+
+        // Use long and inclusive dimensions so extreme selections cannot overflow and bypass the cap.
+        if (selectedBlocks > maxBlocks) {
             player.sendMessage(ChatColor.RED + "Selected area is too big!");
             return locs;
         }

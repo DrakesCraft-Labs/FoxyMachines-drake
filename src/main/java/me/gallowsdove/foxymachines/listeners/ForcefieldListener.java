@@ -26,45 +26,35 @@ public class ForcefieldListener implements Listener {
     private void onPlayerBreak(@Nonnull BlockBreakEvent e) {
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onExplosionBreak(@Nonnull BlockExplodeEvent e) {
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBurnBreak(@Nonnull BlockBurnEvent e) {
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onLeavesDecay(@Nonnull LeavesDecayEvent e) {
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onFadeBreak(@Nonnull BlockFadeEvent e) {
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -75,17 +65,13 @@ public class ForcefieldListener implements Listener {
 
         Block b = e.getBlock();
 
-        if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-            Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-        }
+        ForcefieldDome.restoreVolatileBlock(b);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBlocksBreakByExplosiveToolEvent(@Nonnull ExplosiveToolBreakBlocksEvent e) {
         for (Block b : e.getAdditionalBlocks()) {
-            if (ForcefieldDome.FORCEFIELD_BLOCKS.remove(b)) {
-                Bukkit.getScheduler().runTask(FoxyMachines.getInstance(), () -> b.setType(Material.BARRIER));
-            }
+            ForcefieldDome.restoreVolatileBlock(b);
         }
     }
 

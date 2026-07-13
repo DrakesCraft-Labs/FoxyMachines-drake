@@ -10,14 +10,11 @@ import com.github.drakescraft_labs.slimefun4.implementation.SlimefunItems;
 import me.gallowsdove.foxymachines.FoxyMachines;
 import me.gallowsdove.foxymachines.Items;
 import com.github.drakescraft_labs.slimefun4.legacy.api.BlockStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -44,12 +41,13 @@ public class ChunkLoader extends SlimefunItem {
             @Override
             public void onPlayerBreak(@Nonnull BlockBreakEvent e, @Nonnull ItemStack item, @Nonnull List<ItemStack> drops) {
                 Block b = e.getBlock();
-                if (BlockStorage.getLocationInfo(b.getLocation(), "owner") != null) {
-                    NamespacedKey key = new NamespacedKey(FoxyMachines.getInstance(), "chunkloaders");
-                    Player p = Bukkit.getPlayer(UUID.fromString(BlockStorage.getLocationInfo(b.getLocation(), "owner")));
-
-                    int i = p.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) - 1;
-                    p.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, i);
+                String owner = BlockStorage.getLocationInfo(b.getLocation(), "owner");
+                if (owner != null) {
+                    try {
+                        FoxyMachines.getInstance().getChunkLoaderQuotaService().release(UUID.fromString(owner));
+                    } catch (IllegalArgumentException ignored) {
+                        FoxyMachines.log(java.util.logging.Level.WARNING, "Ignoring Chunk Loader with invalid owner data at " + b.getLocation());
+                    }
 
                     b.getChunk().setForceLoaded(false);
                     BlockStorage.clearBlockInfo(b);

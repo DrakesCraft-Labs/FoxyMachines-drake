@@ -1,12 +1,10 @@
 package me.gallowsdove.foxymachines;
 
 
-import com.github.drakescraft_labs.labupdate.DrakesLabsReleaseUpdate;
 import dev.drake.infinitylib.common.Events;
 import dev.drake.infinitylib.common.Scheduler;
 import dev.drake.infinitylib.core.AbstractAddon;
 
-import com.github.drakescraft_labs.slimefun4.libraries.dough.updater.BlobBuildUpdater;
 import lombok.SneakyThrows;
 import me.gallowsdove.foxymachines.abstracts.AbstractWand;
 import me.gallowsdove.foxymachines.abstracts.CustomBoss;
@@ -23,6 +21,7 @@ import me.gallowsdove.foxymachines.tasks.GhostBlockTask;
 import me.gallowsdove.foxymachines.tasks.MobTicker;
 import me.gallowsdove.foxymachines.tasks.QuestTicker;
 import me.gallowsdove.foxymachines.utils.QuestUtils;
+import me.gallowsdove.foxymachines.services.ChunkLoaderQuotaService;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -31,9 +30,10 @@ public class FoxyMachines extends AbstractAddon {
     private static FoxyMachines instance;
 
     public String folderPath;
+    private ChunkLoaderQuotaService chunkLoaderQuotaService;
 
     public FoxyMachines() {
-        super ("GallowsDove", "FoxyMachines", "master", "auto-update");
+        super("DrakesCraft-Labs", "FoxyMachines-drake", "main", "auto-update");
     }
 
     @Override
@@ -41,8 +41,12 @@ public class FoxyMachines extends AbstractAddon {
     public void enable() {
         instance = this;
 
+        this.folderPath = getDataFolder().getAbsolutePath() + File.separator + "data-storage" + File.separator;
+        this.chunkLoaderQuotaService = new ChunkLoaderQuotaService(this);
+
         Events.registerListener(new ChunkLoadListener());
         Events.registerListener(new ChunkLoaderListener());
+        Events.registerListener(chunkLoaderQuotaService);
         Events.registerListener(new SlimeWorldCompatListener());
         Events.registerListener(new BoostedRailListener());
         Events.registerListener(new BerryBushListener());
@@ -62,7 +66,6 @@ public class FoxyMachines extends AbstractAddon {
         ItemSetup.INSTANCE.init();
         ResearchSetup.INSTANCE.init();
 
-        this.folderPath = getDataFolder().getAbsolutePath() + File.separator + "data-storage" + File.separator;
         BerryBushTrimmer.loadTrimmedBlocks();
         ForcefieldDome.loadDomeLocations();
         Scheduler.run(() -> ForcefieldDome.INSTANCE.setupDomes());
@@ -77,10 +80,6 @@ public class FoxyMachines extends AbstractAddon {
         getAddonCommand().addSub(new KillallCommand()).addSub((new QuestCommand())).
                 addSub(new SacrificialAltarCommand()).addSub(new SummonCommand()).addSub(new ListallCommand());
 
-        if (getConfig().getBoolean("auto-update") && getDescription().getVersion().startsWith("Dev - ")) {
-            BlobBuildUpdater updater = new BlobBuildUpdater(this, this.getFile(), "FoxyMachines", "Dev");
-            updater.start();
-        }
     }
 
     @SneakyThrows
@@ -96,5 +95,10 @@ public class FoxyMachines extends AbstractAddon {
     @Nonnull
     public static FoxyMachines getInstance() {
         return instance;
+    }
+
+    @Nonnull
+    public ChunkLoaderQuotaService getChunkLoaderQuotaService() {
+        return chunkLoaderQuotaService;
     }
 }
