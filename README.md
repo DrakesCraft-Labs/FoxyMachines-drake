@@ -1,16 +1,71 @@
 # FoxyMachines Drake
 
-FoxyMachines Drake is the maintained DrakesCraft distribution of the FoxyMachines Slimefun addon. It keeps the original item IDs, recipes and stored data so established worlds and player inventories remain compatible while the runtime is updated for the current platform.
+<p>
+  <a href="https://github.com/DrakesCraft-Labs/FoxyMachines-drake/actions"><img src="https://img.shields.io/github/actions/workflow/status/DrakesCraft-Labs/FoxyMachines-drake/maven.yml?branch=main&label=CI&style=flat-square" alt="CI"/></a>
+  <img src="https://img.shields.io/badge/Minecraft-1.21.11-6d28d9?style=flat-square" alt="Minecraft 1.21.11"/>
+  <img src="https://img.shields.io/badge/Java-21-f89820?style=flat-square" alt="Java 21"/>
+  <img src="https://img.shields.io/badge/Slimefun-Drake%2011-581c87?style=flat-square" alt="Slimefun Drake 11"/>
+</p>
 
-**Runtime:** Paper 1.21.1 compatible server, Java 21, Slimefun Drake 11 and InfinityLib Drake.
+FoxyMachines Drake es la distribución mantenida de FoxyMachines para el stack de
+DrakesCraft. Añade máquinas, herramientas, equipo, mobs y progresión a Slimefun
+sin reemplazar los IDs, recetas ni datos de mundo que ya usan los jugadores.
 
-## Operational guarantees
+## Runtime compatible
 
-- Plugin identity remains `FoxyMachines`; existing Slimefun items and PDC data continue to resolve.
-- Chunk-loader quota releases made while the owner is offline are persisted and applied on their next join.
-- Forcefield domes no longer retain Bukkit `Block` instances, do not modify world state from async tasks, and only remove barriers created by the dome itself.
-- Wands reject protected internal blocks and validate their selected volume before changing terrain.
-- The addon does not self-update. Releases are built, verified and staged through DrakesCraft operations.
+| Componente | Objetivo |
+|---|---|
+| Minecraft / Paper / Purpur | **1.21.11** |
+| Java | **21** |
+| Slimefun | **Slimefun Drake 11** |
+| API de compilación | `paper-api 1.21.1-R0.1-SNAPSHOT` |
+
+La API Maven de Paper conserva la línea `1.21.1`; el JAR se compila contra el
+core Slimefun Drake 11 y se destina al runtime Paper/Purpur 1.21.11. No es una
+segunda línea de compatibilidad ni un downgrade del servidor.
+
+## Contenido
+
+| Área | Incluye |
+|---|---|
+| Máquinas | Improvement Forge, Potion Mixer, Electric Gold Refinery, Chunk Loader, Boosted Rails y Forcefield Dome. |
+| Herramientas | Staves eléctricos, Remote Controller, Position Selector, Fill/Sponge Wand, Ghost Block Remover y caña de Poseidón. |
+| Equipo | Armas, armaduras, materiales y runas de progresión. |
+| Mundo | Pixie Queen, Headless Horseman, Pixie, Helldog, altar sacrificial y ghost blocks. |
+
+## Trabajo Drake
+
+- Separación del monorepo a un repositorio construible y versionado por separado.
+- Java 21, Paper API actual y dependencias del core Drake declaradas de forma explícita.
+- Sin autoactualizador remoto: las actualizaciones se compilan, verifican, despliegan y pueden revertirse.
+- Las liberaciones de cuota de Chunk Loader para dueños offline se persisten y se aplican en su próximo `PlayerJoin`.
+- Los domos de fuerza ya no retienen instancias `Block`/chunks, no escriben Bukkit desde tareas async y no eliminan barreras ajenas.
+- Las varitas bloquean materiales internos y validan el volumen solicitado antes de modificar terreno.
+- Potion Mixer usa la API moderna de tipos de poción de 1.21.11.
+
+## Compatibilidad de datos
+
+El plugin conserva `name: FoxyMachines`, su paquete Java, claves PDC, IDs de
+Slimefun y recetas. Esta es una condición de diseño: un update no debe invalidar
+inventarios, máquinas colocadas ni progreso existente.
+
+Antes de una actualización de producción, respalda:
+
+```text
+plugins/FoxyMachines-drake.jar
+plugins/FoxyMachines/
+```
+
+No cargues dos JAR de FoxyMachines a la vez. Conserva el JAR anterior como
+rollback hasta validar una máquina ya colocada, un Chunk Loader y un Forcefield
+Dome tras el reinicio.
+
+## Configuración
+
+`plugins/FoxyMachines/config.yml` conserva las opciones conocidas del addon.
+Las instalaciones nuevas usan `auto-update: false`; este fork no descarga ni
+reemplaza artefactos automáticamente. Los ítems opcionales siguen pudiendo
+deshabilitarse mediante la configuración de Slimefun.
 
 ## Build
 
@@ -18,68 +73,10 @@ FoxyMachines Drake is the maintained DrakesCraft distribution of the FoxyMachine
 mvn -B -ntp clean verify
 ```
 
-The distributable artifact is `target/FoxyMachines-drake.jar`.
+Artefacto: `target/FoxyMachines-drake.jar`.
 
-## Deployment
+## Procedencia
 
-1. Back up `/plugins/FoxyMachines-drake.jar` and `/plugins/FoxyMachines/`.
-2. Upload the verified artifact with the same plugin filename.
-3. Restart only during a planned maintenance window.
-4. Confirm that Slimefun registers FoxyMachines without migration errors and validate an existing machine before announcing the release.
-
-The previous JAR is the rollback artifact. Do not run two FoxyMachines JARs at once.
-
-## Configuration
-
-`plugins/FoxyMachines/config.yml` retains the established options. New installations default `auto-update` to `false`; no remote update service is used by this distribution.
-
-Individual items can still be disabled through Slimefun's `items.yml` configuration when appropriate.
-
-## Bosses
-* Pixie Queen
-* Headless Horseman
-
-## Other Mobs
-* Pixie
-* Helldog
-
-## Tools
-* Electric Wind Staff
-* Electric Fire Staff
-* Electric Fire Staff II
-* Berry Bush Trimmer
-* Poseidon's Fishing Rod
-* Remote Controller
-* Ghost Block Remover
-* Position Selector
-* Fill Wand
-* Sponge Wand
-
-## Weapons
-* Healing Bow
-* Cursed Sword
-* Celestial Sword
-* Elucidator
-* Acri Arcum
-
-## Armor
-* Aquatic Helmet
-* Resistant Chestplate
-* Fiery Leggings
-* Light Boots
-
-## Machines
-* Improvement Forge
-* Potion Mixer
-* Electric Gold Refinery
-* Chunk Loader
-* Boosted Rails
-* Forcefield Dome
-
-## Others
-* Sacrificial Altar
-* Ghost Blocks
-
-## Provenance
-
-This repository was split from the DrakesCraft community-addons monorepo while preserving its history. Original FoxyMachines authorship remains credited in source and project metadata; DrakesCraft Labs maintains this distribution and its deployment process.
+El código original de FoxyMachines mantiene el crédito a GallowsDove. Este
+repositorio preserva el historial del módulo separado desde el monorepo de
+DrakesCraft y documenta los cambios propios de compatibilidad y operación.
