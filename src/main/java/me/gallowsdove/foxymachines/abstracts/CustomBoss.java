@@ -77,13 +77,13 @@ public abstract class CustomBoss extends CustomMob {
             if (entity.isInsideVehicle() && entity.getVehicle() instanceof LivingEntity vehicle) {
                 double finalHealth = entity.getHealth() + vehicle.getHealth() - event.getFinalDamage();
                 if (finalHealth > 0) {
-                    bossbar.setProgress(Math.min(finalHealth / (entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() +
-                            vehicle.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()), 1));
+                    bossbar.setProgress(BossBarProgress.sanitize(finalHealth / (entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() +
+                            vehicle.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())));
                 }
             } else {
                 double finalHealth = entity.getHealth() - event.getFinalDamage();
                 if (finalHealth > 0) {
-                    bossbar.setProgress(Math.min(finalHealth / entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), 1));
+                    bossbar.setProgress(BossBarProgress.sanitize(finalHealth / entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
                 }
             }
         }
@@ -104,6 +104,7 @@ public abstract class CustomBoss extends CustomMob {
         BossBar bossbar = getBossBarForEntity(event.getEntity());
         bossbar.setVisible(false);
         bossbar.removeAll();
+        instances.remove(event.getEntity());
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -136,10 +137,10 @@ public abstract class CustomBoss extends CustomMob {
         BossBar bossbar = Bukkit.createBossBar(KEY, style.name, style.color, style.style, style.flags);
         bossbar.setVisible(true);
         if (entity.isInsideVehicle() && entity.getVehicle() instanceof LivingEntity vehicle) {
-            bossbar.setProgress(Math.min((entity.getHealth() + vehicle.getHealth()) / (entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() +
-                    vehicle.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()), 1));
+            bossbar.setProgress(BossBarProgress.sanitize((entity.getHealth() + vehicle.getHealth()) / (entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() +
+                    vehicle.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())));
         } else {
-            bossbar.setProgress(Math.min(entity.getHealth() / entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), 1));
+            bossbar.setProgress(BossBarProgress.sanitize(entity.getHealth() / entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
         }
         instances.put(entity, bossbar);
         return bossbar;
@@ -150,10 +151,11 @@ public abstract class CustomBoss extends CustomMob {
             bossbar.setVisible(false);
             bossbar.removeAll();
         }
+        instances.clear();
     }
 
     public void updateBossBar(LivingEntity entity, double progress) {
         BossBar bossbar = getBossBarForEntity(entity);
-        bossbar.setProgress(progress);
+        bossbar.setProgress(BossBarProgress.sanitize(progress));
     }
 }
