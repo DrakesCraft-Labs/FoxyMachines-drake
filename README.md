@@ -1,6 +1,6 @@
 <div align="center">
 
-![FoxyMachines-Drake Banner](./banner.svg)
+  <img src="https://raw.githubusercontent.com/DrakesCraft-Labs/FoxyMachines-drake/main/banner.svg" alt="FoxyMachines-drake Banner" width="920" />
 
 # 🧪 FoxyMachines-Drake
 
