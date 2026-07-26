@@ -39,6 +39,8 @@
 
 # Drake deployments are built, reviewed and staged manually.
 auto-update: false
+# Keep registered Chunk Loader blocks intact, but do not let them force-load chunks.
+chunk-loaders-enabled: false
 max-chunk-loaders: 8
 gps-complexity-per-loader: 7500
 ghost-blocks: true

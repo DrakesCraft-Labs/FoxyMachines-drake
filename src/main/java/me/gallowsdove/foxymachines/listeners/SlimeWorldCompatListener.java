@@ -1,6 +1,6 @@
 package me.gallowsdove.foxymachines.listeners;
 
-import me.gallowsdove.foxymachines.Items;
+import me.gallowsdove.foxymachines.FoxyMachines;
 import com.github.drakescraft_labs.slimefun4.legacy.api.BlockStorage;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,7 +15,7 @@ public class SlimeWorldCompatListener implements Listener {
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
-        reapplyChunkLoaders(e.getWorld());
+        syncChunkLoaders(e.getWorld());
     }
 
     @EventHandler
@@ -23,15 +23,17 @@ public class SlimeWorldCompatListener implements Listener {
         clearChunkLoaders(e.getWorld());
     }
 
-    private void reapplyChunkLoaders(World world) {
+    public void syncChunkLoaders(World world) {
         Map<Location, ?> storage = BlockStorage.getRawStorage(world);
         if (storage == null) return;
+
+        boolean enabled = FoxyMachines.getInstance().getConfig().getBoolean("chunk-loaders-enabled", false);
 
         for (Location loc : storage.keySet()) {
             try {
                 String id = BlockStorage.checkID(loc);
                 if (id != null && id.equals("CHUNK_LOADER")) {
-                    loc.getChunk().setForceLoaded(true);
+                    loc.getChunk().setForceLoaded(enabled);
                 }
             } catch (Exception ignored) {
             }

@@ -26,6 +26,8 @@ import me.gallowsdove.foxymachines.services.ChunkLoaderQuotaService;
 import javax.annotation.Nonnull;
 import java.io.File;
 
+import org.bukkit.Bukkit;
+
 public class FoxyMachines extends AbstractAddon {
     private static FoxyMachines instance;
 
@@ -47,7 +49,9 @@ public class FoxyMachines extends AbstractAddon {
         Events.registerListener(new ChunkLoadListener());
         Events.registerListener(new ChunkLoaderListener());
         Events.registerListener(chunkLoaderQuotaService);
-        Events.registerListener(new SlimeWorldCompatListener());
+        SlimeWorldCompatListener slimeWorldCompatListener = new SlimeWorldCompatListener();
+        Events.registerListener(slimeWorldCompatListener);
+        Bukkit.getWorlds().forEach(slimeWorldCompatListener::syncChunkLoaders);
         Events.registerListener(new BoostedRailListener());
         Events.registerListener(new BerryBushListener());
         Events.registerListener(new ForcefieldListener());
